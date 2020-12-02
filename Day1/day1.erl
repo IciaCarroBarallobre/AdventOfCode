@@ -1,7 +1,7 @@
 -module(day1).
 -export([solve_half1/1,solve_half2/1]).
 
-%%%%%%%%%%%%%% AUX
+%%%%%%%%%%%%%% READ THE LIST
 read(FileName) ->
     {ok, Binary} = file:read_file(FileName),
     string:tokens(erlang:binary_to_list(Binary), "\n").
