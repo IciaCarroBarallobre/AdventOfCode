@@ -1,43 +1,40 @@
 -module(day2).
--export([split/1, validate_psswd_1/1,validate_psswd_2/1,policy2/4]).
+-export([split/1, valid_psswd_1/1,valid_psswd_2/1]).
 
-%%%%%%%%%%%%%% READ THE LIST 
+%%%%%%% READ AND PARSE THE INPUT 
 read(FileName) ->
     {ok, Binary} = file:read_file(FileName),
     string:tokens(erlang:binary_to_list(Binary), "\n").
 
+map(F, List) ->
+    [F(X) || X<-List].
 
 split(FileName) -> 
     A = read(FileName),
     map(fun(S) -> string:tokens(S, "-: ") end, A).
 
-map(F, List) ->
-    [F(X) || X<-List].
+%%%%%%%%% AUX
+contar(Char, String) -> string:len([X||X<- String,  Char == [X]]).
 
-%%%%%%%%%%%%%% AUX
-
-contar(Str, String) -> string:len([X||X<- String,  Str == [X]]).
-
-policy1(Minimun, Maximun, Letra, String) ->
-    Ocurrence = contar(Letra,String),
+%%%%%%%%%%%%%%  POLICIES
+policy1(Minimun, Maximun, Char, String) ->
+    Ocurrence = contar(Char,String),
     ((Minimun =< Ocurrence)  and (Maximun >= Ocurrence)).
 
-policy2(Pos1, Pos2, Letra, String) ->
-    A = (Letra == [lists:nth(Pos1,String)]),
-    B = (Letra == [lists:nth(Pos2,String)]),
+policy2(Pos1, Pos2, Char, String) ->
+    A = (Char == [lists:nth(Pos1,String)]),
+    B = (Char == [lists:nth(Pos2,String)]),
     (A and (not B)) or (B and (not A)).
 
-%%%%%%%%%%%%%% Solve
+%%%%%%%%%%%%%% SOLVE
                                    
-validate_psswd([], Acc, Policy) -> Acc;
-validate_psswd([[Arg1,Arg2,Letra, String]|T] , Acc,Policy) ->  
-    Arg_aux_1 = erlang:list_to_integer(Arg1), 
-    Arg_aux_2 = erlang:list_to_integer(Arg2),
-    Policy_Result = Policy(Arg_aux_1,Arg_aux_2, Letra, String),
+valid_psswd([], Acc, Policy) -> Acc;
+valid_psswd([[Arg1,Arg2,Char, String]|T] , Acc,Policy) ->  
+    Policy_Result = Policy(erlang:list_to_integer(Arg1), erlang:list_to_integer(Arg2), Char, String),
     if 
-        Policy_Result -> validate_psswd(T, Acc+1, Policy);
-        true -> validate_psswd(T, Acc, Policy)
+        Policy_Result -> valid_psswd(T, Acc+1, Policy);
+        true -> valid_psswd(T, Acc, Policy)
     end.
 
-validate_psswd_1(L) -> validate_psswd(L,0, fun(Mn,Mx, Letra,String) -> policy1(Mn,Mx, Letra,String) end).
-validate_psswd_2(L) -> validate_psswd(L,0, fun(Pos1,Pos2, Letra,String) -> policy2(Pos1,Pos2, Letra,String) end).
+valid_psswd_1(L) -> valid_psswd(L,0, fun(Mn,Mx, Char,String) -> policy1(Mn,Mx, Char,String) end).
+valid_psswd_2(L) -> valid_psswd(L,0, fun(Pos1,Pos2, Char,String) -> policy2(Pos1,Pos2, Char,String) end).
