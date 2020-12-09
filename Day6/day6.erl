@@ -1,5 +1,5 @@
 -module(day6).
--export([read/1,yes_by_group_1/1,yes_by_group_2/1,policy2/1]).
+-export([read/1,yes_by_group_1/1,yes_by_group_2/1]).
 
 %%%%%%% READ AND PARSE THE INPUT 
 
